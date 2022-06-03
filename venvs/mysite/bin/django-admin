@@ -1,4 +1,4 @@
-#!/Users/DongGeon_KIm/programming/venvs/mysite/bin/python3.9
+#!/Users/DongGeon_KIm/programming/project_django/venvs/mysite/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
