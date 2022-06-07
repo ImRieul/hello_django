@@ -1,9 +1,80 @@
-{% if question_list %}
-    <ul>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3">
+    <table class="table">
+        <thead>
+        <tr class="table-dark">
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일시</th>
+        </tr>
+        </thead>
+    <tbody>
+        {% if question_list %}
         {% for question in question_list %}
-            <li><a href="/pybo/{{ question.id }}/">{{ question_list }}</a></li>
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a></td>
+            <td>{{ question.create_date }}</td>
+        </tr>
         {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="3">Empty Question</td>
+        </tr>
+        {% endif %}
+    </tbody>
+    </table>
+    <!-- paging start -->
+    <ul class="pagination justify-content-center">
+        <!-- previous page -->
+        {% if question_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.previous_page_number }}">Prev</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">Prev</a>
+        </li>
+        {% endif %}
+        <!-- pre ... -->
+        {% if question_list.number > 3 %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">...</a>
+        </li>
+        {% endif %}
+        <!-- page list -->
+        {% for page_number in question_list.paginator.page_range %}
+        {% if page_number >= question_list.number|add:-2 and page_number <= question_list.number|add:2 %}
+        {% if page_number == question_list.number %}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        <!-- ... next -->
+        {% if question_list.number < question_list.paginator.num_pages|add:-2 %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.paginator.num_pages }}">...</a>
+        </li>
+        {% endif %}
+        <!-- next page -->
+        {% if question_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.next_page_number }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">Next</a>
+        </li>
+        {% endif %}
     </ul>
-{% else %}
-    <p>Empty Question</p>
-{% endif %}
+    <!-- paging end -->
+    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">Quest</a>
+</div>
+{% endblock %}
