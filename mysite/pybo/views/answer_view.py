@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.contrib import messages
 from django.utils import timezone
 
@@ -21,7 +21,7 @@ def create(request, question_id):
             answer.question = question
             answer.author = request.user
             answer.save()
-            return redirect('pybo:detail', question_id=question.id)
+            return redirect(f"{resolve_url('pybo:detail', question_id=question.id)}#answer_{answer.id}")
     else:
         return HttpResponseNotAllowed('Only POST is possible.')
     context = {'question': question, 'form': form}
@@ -40,7 +40,7 @@ def modify(request, answer_id):
             answer = form.save(commit=False)
             answer.modify_date = timezone.now()
             answer.save()
-            return redirect('pybo:detail', question_id=answer.question.id)
+            return redirect(f"{resolve_url('pybo:detail', question_id=answer.question.id)}#answer_{answer.id}")
     else:
         form = AnswerForm(instance=answer)
     context = {'answer': answer, 'form': form}
@@ -64,4 +64,4 @@ def vote(request, answer_id):
         messages.error(request, "Can't recommend to your writing")
     else:
         answer.voter.add(request.user)
-    return redirect('pybo:detail', question_id=answer.question.id)
+    return redirect(f"{resolve_url('pybo:detail', question_id=answer.question.id)}#answer_{answer.id}")

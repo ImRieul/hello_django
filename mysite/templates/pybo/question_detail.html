@@ -2,6 +2,7 @@
 {#<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">#}
 {#<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">#}
 {% extends 'base.html' %}
+{% load pybo_filter %}
 {% block content %}
 <div class="container my-3">
     <!-- Show Error -->
@@ -17,7 +18,8 @@
     <h2 class="border-bottom py-2">{{ question.subject }}</h2>
     <div class="card my-3">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>
+{#            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>#}
+            <div class="card-text">{{ question.content|mark }}</div>
             <div class="d-flex justify-content-end">
                 {% if question.modify_date %}
                 <div class="badge bg-light text-dark p-2 text-start mx-3">
@@ -48,9 +50,11 @@
     <!-- Answer -->
     <h5 class="border-bottom py-2">{{ question.answer_set.count }} Answer</h5>
     {% for answer in question.answer_set.all %}
+    <a id="answer_{{ answer.id }}"></a>
     <div class="card my-3">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>
+{#            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>#}
+            <div class="card-text">{{ answer.content|mark }}</div>
             <div class="d-flex justify-content-end">
                 {% if answer.modify_date %}
                 <div class="badge bg-light text-dark p-2 text-start mx-3">

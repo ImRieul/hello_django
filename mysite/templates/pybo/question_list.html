@@ -2,6 +2,19 @@
 {% load pybo_filter %}
 {% block content %}
 <div class="container my-3">
+    <div class="row my-3">
+        <div class="col-6">
+            <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">Quest</a>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <input type="text" id="search_keyword" class="form-control" value="{{ keyword|default_if_none:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <table class="table">
         <thead>
         <tr class="text-center table-dark">
@@ -37,7 +50,8 @@
         <!-- previous page -->
         {% if question_list.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.previous_page_number }}">Prev</a>
+            <a class="page-link" data-page="{{ question_list.previous_page_number }}"
+               href=javascript:void(0)">Prev</a>
         </li>
         {% else %}
         <li class="page-item disabled">
@@ -47,7 +61,8 @@
         <!-- pre ... -->
         {% if question_list.number > 3 %}
         <li class="page-item">
-            <a class="page-link" href="?page=1">...</a>
+            <a class="page-link" data-page="1"
+               href="javascript:void(0)">...</a>
         </li>
         {% endif %}
         <!-- page list -->
@@ -59,7 +74,8 @@
         </li>
         {% else %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            <a class="page-link" data-page="{{ page_number }}"
+               href="javascript:void(0)">{{ page_number }}</a>
         </li>
         {% endif %}
         {% endif %}
@@ -67,13 +83,15 @@
         <!-- ... next -->
         {% if question_list.number < question_list.paginator.num_pages|add:-2 %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.paginator.num_pages }}">...</a>
+            <a class="page-link" data-page="{{ question_list.paginator.num_pages }}"
+               href="javascript:void(0)">...</a>
         </li>
         {% endif %}
         <!-- next page -->
         {% if question_list.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.next_page_number }}">Next</a>
+            <a class="page-link" data-page="{{ question_list.next_page_number }}"
+               href="javascript:void(0)">Next</a>
         </li>
         {% else %}
         <li class="page-item disabled">
@@ -82,6 +100,30 @@
         {% endif %}
     </ul>
     <!-- paging end -->
-    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">Quest</a>
+{#    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">Quest</a>#}
 </div>
+<form id="searchForm" method="get" action="{% url 'index' %}">
+    <input type="hidden" id="keyword" name="keyword" value="{{ keyword|default_if_none:'' }}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+</form>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    // page 버튼을 누르면 data-page의 값을 읽음
+    const page_elements = document.getElementsByClassName("page-link");
+    Array.from(page_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+        })
+    })
+
+    // searchForm을 실행
+    const btn_search = document.getElementById('btn_search');
+    btn_search.addEventListener('click', function() {
+        document.getElementById('keyword').value = document.getElementById('search_keyword').value;
+        document.getElementById('page').value = 1;  // 검색 버튼을 클릭할 경우 1페이지부터 조회
+        document.getElementById('searchForm').submit();
+    })
+</script>
 {% endblock %}
